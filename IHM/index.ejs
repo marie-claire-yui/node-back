@@ -8,6 +8,7 @@
 </head>
 <body>
 <%- include('./component/header') %>
+
     <section>
         <form action="/listee" method="post">
             <input type="hidden" name="id" id="id">
@@ -26,9 +27,16 @@
         <ul>
             <% for (let i = 0; i < data.length; i++){ %>
                 <li><%= data[i].title + ': ' + data[i].description %></li>
-                <input type="button" value="Supprimer" onclick="deleteData('<%= data[i].id %>')">
+                <input type="button" value="Supprimer" onclick="openModal('<%= data[i].id %>')">
                 <input type="button" value="Modifier" 
                 onclick="putData('<%= data[i].id %>','<%= data[i].title %>','<%= data[i].description %>')">
+
+                <div id="popup">
+                    <p>êtes vous sure de vouloir supprimer?</p>
+                    <input type="button" value="oui" id="ok">
+                    <input type="button" value="annuler" id="close()">
+                    </div>
+
             <% } %>
   
         </ul>
@@ -47,6 +55,24 @@
        .then(response=>response.json())
        .then(data => window.location.href = data.routeRacine )
        .catch(error => error(error));
+    }
+document.getElementById('close').addEventListener('click',()=>{
+    document.getElementById('popup').style.display='none';
+})
+
+    // function open(){
+    //     document.getElementById('popup').style.display = 'block';
+    // }
+
+    // function close(){
+    //     document.getElementById('popup').style.display = 'none';
+    // }
+
+    function openModal(id){
+        document.getElementById('popup').style.display ='block';
+        document.getElementById('ok').addEventListener('click',()=>{
+            deleteData(id)
+        })
     }
 </script>
 </html>
