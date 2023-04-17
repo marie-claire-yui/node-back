@@ -7,11 +7,12 @@
     <title>Document</title>
 </head>
 <body>
-<!-- <%- include('./component/header') %> -->
+<%- include('./component/header') %>
     <section>
-        <form action="">
-            <label for="Title">Titre</label>
-            <input type="text" id="Title" name="Title"><br>
+        <form action="/listee" method="post">
+            <input type="hidden" name="id" id="id">
+            <label for="title">Titre</label>
+            <input type="text" id="title" name="title"><br>
             <label for="description">Description de la tâche</label><br>
             <textarea name="description" id="description" cols="30" rows="10"></textarea>
             <br>
@@ -25,10 +26,28 @@
         <ul>
             <% for (let i = 0; i < data.length; i++){ %>
                 <li><%= data[i].title + ': ' + data[i].description %></li>
+                <input type="button" value="Supprimer" onclick="deleteData('<%= data[i].id %>')">
+                <input type="button" value="Modifier" 
+                onclick="putData('<%= data[i].id %>','<%= data[i].title %>','<%= data[i].description %>')">
             <% } %>
   
         </ul>
     </section>
 </body>
+<script>
+    function putData(id, title, description){
+        document.getElementById('id').value = id;
+        document.getElementById('title').value = title;
+        document.getElementById('description').value = description;
+    }
+
+    function deleteData(id){
+       let endPoint = 'listee/'+id;
+       fetch(endPoint,{method : "DELETE"})
+       .then(response=>response.json())
+       .then(data => window.location.href = data.routeRacine )
+       .catch(error => error(error));
+    }
+</script>
 </html>
 

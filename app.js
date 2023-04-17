@@ -23,6 +23,7 @@ app.use(myConnection(mysql,optionBDD,'pool'));
 app.use(express.static('public'));
 app.set('views','./IHM'); // définition du chemin de mes views
 app.set('view engine','ejs'); // définition du moteur de render ou de views ou de templates 
+app.use(express.urlencoded({extended : false}))
 
 app.get('/', (req, res)=>{
     req.getConnection((error, connection)=>{
@@ -39,6 +40,49 @@ app.get('/', (req, res)=>{
       }
     })
   });
+app.post('/listee',(req,res)=>{
+  let id = req.body.id === "" ? null : req.body.id;
+ let title =req.body.title;
+ let description = req.body.description;
+ let requeteSQL = id === null ? 'INSERT INTO listee(title,description) VALUES (?,?)' 
+ : 'UPDATE listee SET title = ?,description = ? WHERE id = ?';
+ let data = id === null ? [title, description] : [title, description, id]
+ req.getConnection((error, connection)=>{
+  if (error) {
+    console.error(error);
+  } else {
+    connection.query(
+    requeteSQL,
+   data, 
+    (error, data)=>{
+      if (error) {
+        console.error(error);
+      } else {
+        res.status(302).redirect('/');
+    }})
+  }
+})
+
+})
+
+app.delete('/listee/:id',(req,res)=>{
+  let id = req.params.id;
+
+    req.getConnection((error, connection)=>{
+      if (error) {
+        console.error(error);
+      } else {
+        connection.query('DELETE FROM listee WHERE id = ?', [id], (error, data)=>{
+          if (error) {
+            console.error(error);
+          } else {
+            res.status(200).json({routeRacine : '/'})
+          }
+        })
+      }
+    })
+  })
+
 
 app.get('/a-propos', function (req, res) { 
     res.status(200).render('a-propos');
