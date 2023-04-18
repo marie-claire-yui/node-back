@@ -3,6 +3,7 @@ const app = express();
 const mysql = require('mysql');
 const myConnection = require('express-myconnection');
 const port = 3000;
+const listeRoutes = require('./routes/listeRoutes')
 const optionBDD = {
     host: 'localhost',
     user: 'root',
@@ -24,64 +25,8 @@ app.use(express.static('public'));
 app.set('views','./IHM'); // définition du chemin de mes views
 app.set('view engine','ejs'); // définition du moteur de render ou de views ou de templates 
 app.use(express.urlencoded({extended : false}))
+app.use(listeRoutes); // j'utilise le component d'accès aux données poru listee
 
-app.get('/', (req, res)=>{
-    req.getConnection((error, connection)=>{
-      if (error) {
-        console.error(error);
-      } else {
-        connection.query('SELECT * FROM listee', [], (error, data)=>{
-          if (error) {
-            console.error(error);
-          } else {
-            res.status(200).render('index', {data})
-          }
-        })
-      }
-    })
-  });
-app.post('/listee',(req,res)=>{
-  let id = req.body.id === "" ? null : req.body.id;
- let title =req.body.title;
- let description = req.body.description;
- let requeteSQL = id === null ? 'INSERT INTO listee(title,description) VALUES (?,?)' 
- : 'UPDATE listee SET title = ?,description = ? WHERE id = ?';
- let data = id === null ? [title, description] : [title, description, id]
- req.getConnection((error, connection)=>{
-  if (error) {
-    console.error(error);
-  } else {
-    connection.query(
-    requeteSQL,
-   data, 
-    (error, data)=>{
-      if (error) {
-        console.error(error);
-      } else {
-        res.status(302).redirect('/');
-    }})
-  }
-})
-
-})
-
-app.delete('/listee/:id',(req,res)=>{
-  let id = req.params.id;
-
-    req.getConnection((error, connection)=>{
-      if (error) {
-        console.error(error);
-      } else {
-        connection.query('DELETE FROM listee WHERE id = ?', [id], (error, data)=>{
-          if (error) {
-            console.error(error);
-          } else {
-            res.status(200).json({routeRacine : '/'})
-          }
-        })
-      }
-    })
-  })
 
 
 app.get('/a-propos', function (req, res) { 
